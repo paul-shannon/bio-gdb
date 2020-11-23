@@ -12,4 +12,9 @@ The first version is, of course, only preliminary.  Expect changes in the next f
 
 ## An SBML entry for one reaction
 
+ - <b>firstExperiments/readSBML.R</b> parses the xml into R data structures
+ - <b>firstExperiments/toTSV.R</b> writes them out in language-neutral tab-delimited text
+ - <b>firstExperiments/import/loadAll.cypher</b> loads these structures into a neo4j graph database
+ - expect schema revisions as we work with - start to query - these data
+
 <img src="https://github.com/paul-shannon/human1-for-graphDatabases/blob/main/human1-sbml-1-reaction.png">
