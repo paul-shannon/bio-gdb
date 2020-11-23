@@ -12,4 +12,4 @@ The first version is, of course, only preliminary.  Expect changes in the next f
 
 ## An SBML entry for one reaction
 
-<img src='https://github.com/paul-shannon/human1-for-graphDatabases/blob/main/human1-sbml-1-reaction.png">
+<img src="https://github.com/paul-shannon/human1-for-graphDatabases/blob/main/human1-sbml-1-reaction.png">
