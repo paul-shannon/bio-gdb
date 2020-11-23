@@ -11,7 +11,7 @@ biomedical data commons.
 The first version is, of course, only preliminary.  Expect changes in the next few days and weeks.
 
 ** An SBML entry for one reaction
-<pre>
+<div>
       <reaction metaid="R_HMR_3905" sboTerm="SBO:0000176" id="R_HMR_3905" reversible="false" fast="false" lowerFluxBound="FB2N0" upperFluxBound="FB3N1000">
         <notes>
           <body xmlns="http://www.w3.org/1999/xhtml">
@@ -58,7 +58,5 @@ The first version is, of course, only preliminary.  Expect changes in the next f
         </geneProductAssociation>
       </reaction>
 
-
-
-<pre>
+</div>
 
