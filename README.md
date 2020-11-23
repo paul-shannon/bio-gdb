@@ -17,4 +17,20 @@ The first version is, of course, only preliminary.  Expect changes in the next f
  - <b>firstExperiments/import/loadAll.cypher</b> loads these structures into a neo4j graph database
  - expect schema revisions as we work with - start to query - these data
 
+## The tab-delimited files (see firstExperiments/import/*.tsv), first the entities:
+
+  - <b>reactions.tsv</b>:  very simple, just an id and some chemical attributes
+  - <b>metabolites.tsv</b>: called "species" by human1
+  - <b>genes.tsv</b>:  called "geneProducts" by human1, these are the enzymes in the reaction
+  - <b>groups.tsv</b>: roughly speaking, these are pathways
+
+And the relationships:
+
+  - <b>reactantRoles.tsv</b>:  relationship between substrate metabolites and their reactions
+  - <b>productRoles.tsv</b>:  reactions and the metabolites they produce
+  - <b>geneRoles.tsv</b>:  which genes (enzymes) participate in which reactions
+  - <b>groupMemberships.tsv</b>: non-overlapping assignment of reactions to groups (~pathways)
+
+The SBML (with most namespaces removed):
+  
 <img src="https://github.com/paul-shannon/human1-for-graphDatabases/blob/main/human1-sbml-1-reaction.png">
