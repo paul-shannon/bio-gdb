@@ -8,7 +8,7 @@ This repo translates Human1's SBML distribution into flat tsv files which can be
 databases.  Our emphasis at present is on filling to <b><i>graph</i></b> databases, neo4j and the google
 biomedical data commons.
 
-The first version is, of course, only preliminary.  Expect changes in the next few days and weeks.
+This first version is, of course, only preliminary.  Expect changes in the next few days and weeks.
 
 ## An SBML entry for one reaction
 
