@@ -10,12 +10,13 @@ biomedical data commons.
 
 This first version is, of course, only preliminary.  Expect changes in the next few days and weeks.
 
-## An SBML entry for one reaction
+## The ucrrent processing steps
 
  - <b>firstExperiments/readSBML.R</b> parses the xml into R data structures
  - <b>firstExperiments/toTSV.R</b> writes them out in language-neutral tab-delimited text
  - <b>firstExperiments/import/loadAll.cypher</b> loads these structures into a neo4j graph database
- - expect schema revisions as we work with - start to query - these data
+
+Expect schema revisions as we work with - start to query - these data.
 
 ## The tab-delimited files (see firstExperiments/import/*.tsv).
 
