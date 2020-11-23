@@ -1,4 +1,4 @@
-# human1-for-graphDatabases
+# Human1 for graph databases
 [Human1](https://www.chalmers.se/en/departments/bio/news/Pages/The-next-generation-of-human-metabolic-modelling.aspx) is a very recent synthesis of two landmark human metabolic networks:
 
  - [recon2](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4896983/)
