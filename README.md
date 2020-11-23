@@ -5,7 +5,7 @@
  - [Recon3D](https://www.nature.com/articles/nbt.4072)
  
 This repo translates Human1's SBML distribution into flat tsv files which can be used to fill
-databases.  Our emphasis at present is on filling to graph databases, neo4j and the google
+databases.  Our emphasis at present is on filling to <b><i>graph</i></b> databases, neo4j and the google
 biomedical data commons.
 
 The first version is, of course, only preliminary.  Expect changes in the next few days and weeks.
@@ -19,14 +19,14 @@ The first version is, of course, only preliminary.  Expect changes in the next f
 
 ## The tab-delimited files (see firstExperiments/import/*.tsv).
 
-#### first the entities:
+#### The entities:
 
   - <b>reactions.tsv</b>:  very simple, just an id and some chemical attributes
   - <b>metabolites.tsv</b>: called "species" by human1
   - <b>genes.tsv</b>:  called "geneProducts" by human1, these are the enzymes in the reaction
   - <b>groups.tsv</b>: roughly speaking, these are pathways
 
-#### And the relationships:
+#### Their relationships:
 
   - <b>reactantRoles.tsv</b>:  relationship between substrate metabolites and their reactions
   - <b>productRoles.tsv</b>:  reactions and the metabolites they produce
