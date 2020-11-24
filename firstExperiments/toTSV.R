@@ -58,6 +58,22 @@ tbl.species <- as.data.frame(do.call(rbind, lapply(species, function(x) x$specie
                              stringsAsFactors=FALSE)
 write.table(tbl.species, file="import/metabolites.tsv", sep="\t", row.names=FALSE, quote=FALSE)
 
+transform.species <- function(species){
+    tbl <- species$species
+    x <- species$speciesRef
+    if(nrow(x) == 0)
+        return(tbl)
+    #browser()
+    tbl.refs <- t(x[,2])
+    colnames(tbl.refs) <- x[,1]
+    rownames(tbl.refs) <- NULL
+    cbind(tbl, tbl.refs)
+    }
+
+tbls.species <- lapply(species, transform.species)
+tbl.species <- rbind.fill(tbls.species)
+dim(tbl.species) # 8400 11
+
 
 tbls.genes <-lapply(genes, function(gene) {
     tbl <- gene$gene

@@ -193,10 +193,19 @@ readReaction <- function(n, quiet=TRUE)
   tbl.products <- do.call(rbind, tbls.products)
 
 
-    # todo: distinguish "and" genes from "or" genes, return both sets
+    # todo: distinguish "and" genes from "or" genes from single-item geneProductRef
 
-  genes.raw  <- getNodeSet(doc, sprintf("(//reaction)[%d]/geneProductAssociation/*/geneProductRef", n))
-  genes <- unlist(lapply(genes.raw, function(gene) {
+  genes.raw.chosen  <- getNodeSet(doc, sprintf("(//reaction)[%d]/geneProductAssociation//geneProductRef", n))
+  printf(" reaction %d,    genes found: %d", n, length(genes.raw.chosen))
+  #genes.raw.simple  <- getNodeSet(doc, sprintf("(//reaction)[%d]/geneProductAssociation/geneProductRef", n))
+  #genes.raw.and     <- getNodeSet(doc, sprintf("(//reaction)[%d]/geneProductAssociation/and/geneProductRef", n))
+  #genes.raw.or      <- getNodeSet(doc, sprintf("(//reaction)[%d]/geneProductAssociation/or/geneProductRef", n))
+  #genes.raw.allPossibilities <- list(genes.raw.simple, genes.raw.and, genes.raw.or)
+  #good.genes.raw <- which(unlist(lapply(genes.raw.allPossibilities, function(x) length(x) > 0)))
+  #genes.raw.chosen  <- genes.raw.allPossibilities[[good.genes.raw]]
+
+
+  genes <- unlist(lapply(genes.raw.chosen, function(gene) {
       attrs <- xmlAttrs(gene)
       attrs[["geneProduct"]]
       }))
@@ -215,7 +224,15 @@ test_readReaction <- function()
 {
    message(sprintf("--- test_readReaction"))
 
-   x <- readReaction(1)
+   x.1 <- readReaction(1)   # has 9 "or" associated geneAssocation
+   x.2 <- readReaction(2)   # has just 1
+   x.85 <- readReaction(85) # has none
+
+   checkEquals(length(x.1$genes), 9)
+   checkEquals(length(x.2$genes), 1)
+   checkEquals(length(x.85$genes), 0)
+
+   x <- x.1
    checkEquals(names(x), c("reaction", "reactionRefs", "reactants", "products", "genes"))
 
    checkTrue(is.data.frame(x$reaction))
@@ -380,4 +397,3 @@ extractAll <- function()
 
 } # extractAll
 #--------------------------------------------------------------------------------------------------------------
-

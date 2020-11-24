@@ -1,0 +1,5 @@
+library(metaboliteIDmapping)
+class(metabolitesMapping)
+tbl.metIDs <- as.data.frame(metabolitesMapping)
+dim(tbl.metIDs)
+colnames(tbl.metIDs)
