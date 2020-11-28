@@ -33,7 +33,7 @@ start4:
           --volume=$$HOME/github/human1-for-graphDatabases/firstExperiments/logs_v4:/logs \
           --env=NEO4J_AUTH=none \
           --env=NEO4J_dbms.default_database=mets4 \
-          --env='NEO4JLABS_PLUGINS=["apoc"]' \
+          --env='NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]' \
           neo4j:latest
 
 #          --env='NEO4JLABS_PLUGINS=["apoc"]' \

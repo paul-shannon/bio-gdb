@@ -1,3 +1,5 @@
+library(plyr)  # for rbind.fill
+#----------------------------------------------------------------------------------------------------
 compartments <- get(load("compartments.RData"))
 genes <- get(load("genes.RData"))
 groups <- get(load("groups.RData"))
@@ -54,9 +56,9 @@ write.table(tbl.productRoles, file="import/productRoles.tsv", sep="\t", row.name
      # create the species (metabolite) and gene tables
      #------------------------------------------------------------
 
-tbl.species <- as.data.frame(do.call(rbind, lapply(species, function(x) x$species)),
-                             stringsAsFactors=FALSE)
-write.table(tbl.species, file="import/metabolites.tsv", sep="\t", row.names=FALSE, quote=FALSE)
+#tbl.species <- as.data.frame(do.call(rbind, lapply(species, function(x) x$species)),
+#                             stringsAsFactors=FALSE)
+#write.table(tbl.species, file="import/metabolites.tsv", sep="\t", row.names=FALSE, quote=FALSE)
 
 transform.species <- function(species){
     tbl <- species$species
@@ -73,6 +75,22 @@ transform.species <- function(species){
 tbls.species <- lapply(species, transform.species)
 tbl.species <- rbind.fill(tbls.species)
 dim(tbl.species) # 8400 11
+length(which(!is.na(tbl.species$chebi)))  # [1] only 3331 chebi identifiers
+# add chembl, using the unichem
+#
+tbl.cmap <- get(load("../idMapping/unichem/chembl-chebi-table.RData"))
+matches <- match(tbl.species$chebi, tbl.cmap$chebi)
+chembl.values <- unlist(lapply(matches,function(match)
+    if(is.na(match))
+      return (NA)
+    else
+      return(tbl.cmap$chembl[match])))
+
+tbl.species$chembl <- chembl.values
+coi <- c("id","name","compartment","chemicalFormula","bigg.metabolite","chebi","chembl","kegg.compound","metanetx.chemical","hmdb","pubchem.compound","lipidmaps")
+tbl.species <- tbl.species[, coi]
+write.table(tbl.species, file="import/metabolites.tsv", sep="\t", row.names=FALSE, quote=FALSE)
+
 
 
 tbls.genes <-lapply(genes, function(gene) {
