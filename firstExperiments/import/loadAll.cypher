@@ -18,7 +18,11 @@ LOAD CSV with HEADERS from 'file:///metabolites.tsv' AS line FIELDTERMINATOR '\t
      CREATE (:Metabolite {id: line.id,
                           name: line.name,  
                           compartment: line.compartment,
-                          chemicalFormula: line.chemicalFormula});
+                          chemicalFormula: line.chemicalFormula,
+			  chebi: line.chebi,
+			  chembl: line.chembl,
+			  kegg: line.kegg,
+			  hmdb: line.hmdb});
 CREATE INDEX ON :Metabolite(id);
 
 
@@ -32,18 +36,18 @@ CREATE INDEX ON :ReactionGroup(id);
 
 LOAD CSV WITH HEADERS FROM  "file:///geneRoles.tsv" AS line FIELDTERMINATOR '\t'
       MATCH (reaction:Reaction {id: line.reactionID}), (gene:Gene {id: line.geneID})
-      CREATE (gene)-[:Interaction {type: 'catalyzes'}]->(reaction);
+      CREATE (gene)-[:catalyzes {type: 'catalyzes'}]->(reaction);
 
 LOAD CSV WITH HEADERS FROM  "file:///groupMemberships.tsv" AS line FIELDTERMINATOR '\t'
       MATCH (reaction:Reaction {id: line.reactionID}), (group:ReactionGroup {id: line.groupID})
-      CREATE (reaction)-[:Interaction {type: 'belongsTo'}]->(group);
+      CREATE (group)-[:contains {type: 'contains'}]->(reaction);
 
 LOAD CSV WITH HEADERS FROM  "file:///productRoles.tsv" AS line FIELDTERMINATOR '\t'
       MATCH (metabolite:Metabolite {id: line.speciesID}), (reaction:Reaction {id: line.reactionID})
-      CREATE (metabolite)-[:Interaction {type: 'productOf'}]->(reaction);
+      CREATE (reaction)-[:produces {type: 'produces'}]->(metabolite);
 
 LOAD CSV WITH HEADERS FROM  "file:///reactantRoles.tsv" AS line FIELDTERMINATOR '\t'
       MATCH (metabolite:Metabolite {id: line.speciesID}), (reaction:Reaction {id: line.reactionID})
-      CREATE (metabolite)-[:Interaction {type: 'reactantFor'}]->(reaction);
+      CREATE (metabolite)-[:substrateOf{type: 'substrateOf'}]->(reaction);
 
 

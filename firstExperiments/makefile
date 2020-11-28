@@ -1,6 +1,6 @@
 default:
 
-start:
+start3:
 	docker run \
           -d \
           --name mets \
@@ -14,15 +14,15 @@ start:
           --env='NEO4J_dbms_security_procedures_unrestricted=apoc.\*' \
           neo4j:3.5
 
-bash:
+bash3:
 	docker exec -it mets bash 
 
 
-stop:
+stop3:
 	- docker stop mets; docker rm mets;
 
 
-start4:
+start:
 	docker run \
           -d \
           --name mets4 \
@@ -36,34 +36,16 @@ start4:
           --env='NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]' \
           neo4j:latest
 
-#          --env='NEO4JLABS_PLUGINS=["apoc"]' \
-#          --env='NEO4J_dbms_security_procedures_unrestricted=apoc.\*' \
-#          -e NEO4J_apoc_export_file_enabled=true \
-#          -e NEO4J_apoc_import_file_enabled=true \
-#          -e NEO4J_apoc_import_file_use__neo4j__config=true \
-#          --volume=$$HOME/github/human1-for-graphDatabases/firstExperiments/plugins:/plugins \
-
-bash4:
+bash:
 	docker exec -it mets4 bash 
 
 
-stop4:
+stop:
 	- docker stop mets4; docker rm mets4;
 
-logs4:
+log:
 	docker logs mets4
 
 
-#          --env='NEO4JLABS_PLUGINS=["apoc"]' \
-#          --env='NEO4J_dbms_security_procedures_unrestricted=apoc.\*,algo.\*' \
-
-
-# docker run -it --rm \
-#    --publish=7474:7474 \
-#    --publish=7687:7687 \
-#    -e NEO4J_dbms_connector_https_advertised__address="localhost:7473" \
-#    -e NEO4J_dbms_connector_http_advertised__address="localhost:7474" \
-#    -e NEO4J_dbms_connector_bolt_advertised__address="localhost:7687" \
-#    --env=NEO4J_AUTH=none \
-#    neo4j
-
+lsof:
+	lsof -i -n -P | grep 7474
