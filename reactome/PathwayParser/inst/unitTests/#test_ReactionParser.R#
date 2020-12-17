@@ -1,0 +1,115 @@
+library(PathwayParser)
+library(RUnit)
+library(RCyjs)
+library(EnsDb.Hsapiens.v79)
+#------------------------------------------------------------------------------------------------------------------------
+# 2nd reaction to test
+#   <reaction compartment="compartment_17938"  id="reaction_165718"
+#      name="mTORC1 phosphorylation of RPS6KB1 (S6K)" reversible="false">
+#------------------------------------------------------------------------------------------------------------------------
+if(!exists("doc")){
+   file <- "../extdata/R-HSA-165159.sbml"
+   stopifnot(file.exists(file))
+   text <- paste(readLines(file), collapse="\n")
+   checkTrue(nchar(text) > 300000)   # 315493
+   doc <- read_xml(text)
+   xml_ns_strip(doc)
+   }
+
+#------------------------------------------------------------------------------------------------------------------------
+# note that the whole docuent is returned, but some mysterious internal state records
+# the selection made here.  good to check this by calling xml_path, which should
+# return /sbml/model/listOfReactions/reaction[i]
+getReactionForTesting <- function(i)
+{
+    xml_find_all(doc, sprintf("//reaction[%d]", i))
+
+} # getReactionForTesting
+#------------------------------------------------------------------------------------------------------------------------
+if(!exists("reaction"))
+   reaction <- getReactionForTesting(5) #    # "FKBP1A binds sirolimus"
+if(!exists("parser"))
+   parser <- ReactionParser$new(doc, reaction)
+#------------------------------------------------------------------------------------------------------------------------
+runTests <- function()
+{
+   test_ctor()
+   test_getReactants()
+   test_getProducts()
+   test_molecularSpeciesMap()
+
+} # runTests
+#------------------------------------------------------------------------------------------------------------------------
+test_ctor <- function()
+{
+   message(sprintf("--- test_ctor"))
+   checkEquals(xml_path(reaction), "/sbml/model/listOfReactions/reaction[5]")
+
+   checkEquals(parser$getXPath(), "/sbml/model/listOfReactions/reaction[5]")
+   checkEquals(parser$getID(), "reaction_9679044")
+   checkEquals(parser$getName(), "FKBP1A binds sirolimus")
+   checkEquals(parser$getCompartment(), "compartment_70101")
+   notes <- parser$getNotes()
+   checkTrue(nchar(notes) > 1100)
+   checkEquals(substring(notes, 1, 33), "Sirolimus is a macrolide compound")
+
+} # test_ctor
+#------------------------------------------------------------------------------------------------------------------------
+test_getReactants <- function()
+{
+   message(sprintf("--- test_getReactants"))
+   checkEquals(parser$getReactantCount(), 2)
+   checkEquals(sort(parser$getReactants()), sort(c("species_2026007", "species_9678687")))
+
+} # test_getReactants
+#------------------------------------------------------------------------------------------------------------------------
+test_getProducts <- function()
+{
+   message(sprintf("--- test_getProducts"))
+   checkEquals(parser$getProductCount(), 1)
+   checkEquals(sort(parser$getProducts()), "species_9679098")
+
+} # test_getProducts
+#------------------------------------------------------------------------------------------------------------------------
+test_molecularSpeciesMap <- function()
+{
+   message(sprintf("--- test_molecularSpeciesMap"))
+   x <- parser$getMolecularSpeciesMap()
+   checkTrue(is.list(x))
+   checkEquals(length(x), 66)
+   moleculeTypes <- unlist(lapply(x, "[", "moleculeType"))
+   counts <- as.list(table(moleculeTypes))
+
+   checkEquals(counts$complex, 30)
+   checkEquals(counts$protein, 36)
+
+} # test_getProducts
+#------------------------------------------------------------------------------------------------------------------------
+test_toEdgeAndNodeTables <- function()
+{
+   message(sprintf("--- test_toEdgeAndNodeTables"))
+   x <- parser$toEdgeAndNodeTables()
+
+} # test_toEdgeAndNodeTables
+#------------------------------------------------------------------------------------------------------------------------
+renderReaction <- function()
+{
+   if(!exists("rcy")){
+      rcy <- RCyjs()
+      setBrowserWindowTitle(rcy, "ReactionParser")
+      }
+
+   x <- parser$toEdgeAndNodeTables()
+   g.json <- toJSON(dataFramesToJSON(x$edges, x$nodes))
+   deleteGraph(rcy)
+   addGraph(rcy, g.json)
+   loadStyleFile(rcy, "style.js")
+   layout(rcy, "cose")
+     # should more-or-less match layout seen in ./galactose_metabolism.svg
+   #restoreLayout(rcy, "layout-1.Rdata")
+   fit(rcy)
+
+} # renderReaction
+#------------------------------------------------------------------------------------------------------------------------
+if(!interactive())
+    runTests()
