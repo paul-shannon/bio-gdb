@@ -28,7 +28,6 @@ ReactionParser = R6Class("ReactionParser",
               moleculeType <- "molecule"
               compartment <- sub("]", "", tokens[2], fixed=TRUE)
               members <- xml_find_all(species, ".//bqbiol:hasPart//rdf:li/@rdf:resource")
-              #browser()
               if(length(members) == 0)
                 members <- c()
               if(length(members) > 0){
@@ -55,6 +54,7 @@ ReactionParser = R6Class("ReactionParser",
 
    public = list(
        initialize = function(doc, xml.node){
+          stopifnot(length(xml.node) == 1)
           private$doc <- doc
           private$createMolecularSpeciesMap()
           private$xml.node <- xml.node
@@ -134,35 +134,56 @@ ReactionParser = R6Class("ReactionParser",
          },
 
         #' @description
-        #' get the species identifiers for all modifiers
-        #' @returns modifier (species) ids
+        #' get the species identifiers for all products
+        #' @returns product (species) ids
       getProducts = function(){
          xml_text(xml_find_all(private$xml.node, ".//listOfProducts/speciesReference/@species"))
          },
 
         #' @description
-        #' one (zero?) or more modifiers are produced by each reaction
+        #' zero or more modifiers are active in each reaction
         #' @returns an integer count
       getModifierCount = function(){
-         length(xml_find_all(private$xml.node, ".//listOfModifiers/modiferSpeciesReference"))
+         length(xml_find_all(private$xml.node, ".//listOfModifiers/modifierSpeciesReference"))
+         },
+
+        #' @description
+        #' get the species identifiers for all modifiers
+        #' @returns  character (species) ids
+      getModifiers = function(){
+         xml_text(xml_find_all(private$xml.node, ".//listOfModifiers/modifierSpeciesReference/@species"))
          },
 
         #' @description
         #' cytoscape.js various databases (sql, neo4j, dc) represent data in tables.
         #' create them here
+        #' @param excludeUbiquitousSpeces logical, default TRUE: ATP, ADP, water
         #' @returns a named list, edges and nodes, each a data.frame
-      toEdgeAndNodeTables = function(){
-          edge.count <- self$getReactantCount() + self$getProductCount()
+
+      toEdgeAndNodeTables = function(excludeUbiquitousSpecies=TRUE){
+          atp <- "species_113592"
+          adp <- "species_29370"
+          amp <- "species_76577"
+          water <- "species_29356"
+          inconsequentials <- c(atp, adp, water)
+          edge.count <- self$getReactantCount() + self$getProductCount() + self$getModifierCount()
           tbl.in <- data.frame(source=self$getReactants(),
                                target=rep(self$getID(), self$getReactantCount()),
                                interaction=rep("reactantFor", self$getReactantCount()),
                                stringsAsFactors=FALSE)
+          tbl.modifiers <- data.frame()
+          if(self$getModifierCount() > 0){
+              tbl.modifiers <- data.frame(source=self$getModifiers(),
+                                         target=rep(self$getID(), self$getModifierCount()),
+                                         interaction=rep("modifies", self$getModifierCount()),
+                                         stringsAsFactors=FALSE)
+             }
           tbl.out <- data.frame(source=rep(self$getID(), self$getProductCount()),
                                 target=self$getProducts(),
                                 interaction=rep("produces", self$getProductCount()),
                                 stringsAsFactors=FALSE)
 
-          tbl.edges <- rbind(tbl.in, tbl.out) # , tbl.complexes)
+          tbl.edges <- rbind(tbl.in, tbl.out, tbl.modifiers)
 
           species <- grep("species_", unique(c(tbl.edges$source, tbl.edges$target)), v=TRUE)
           map <- self$getMolecularSpeciesMap()
@@ -205,6 +226,21 @@ ReactionParser = R6Class("ReactionParser",
                                   type=unlist(lapply(nodes.all, assignNodeType)),
                                   label=unlist(lapply(nodes.all, assignNodeName)),
                                   stringsAsFactors=FALSE)
+
+          if(excludeUbiquitousSpecies){
+             deleters <- match(inconsequentials, tbl.nodes$id)
+             deleters <- deleters[complete.cases(deleters)]
+             if(length(deleters) > 0)
+                tbl.nodes <- tbl.nodes[-deleters,]
+             deleters <- match(inconsequentials, tbl.edges$source)
+             deleters <- deleters[complete.cases(deleters)]
+             if(length(deleters) > 0)
+                tbl.edges <- tbl.edges[-deleters,]
+             deleters <- match(inconsequentials, tbl.edges$target)
+             deleters <- deleters[complete.cases(deleters)]
+             if(length(deleters) > 0)
+                tbl.edges <- tbl.edges[-deleters,]
+             } # if excludeUbiquitousSpecies
           return(list(edges=tbl.edges, nodes=tbl.nodes))
           }
      ) # public

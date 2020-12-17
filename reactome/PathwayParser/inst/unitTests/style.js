@@ -80,10 +80,11 @@ vizmap = [
        'line-color': 'maroon',
        'target-arrow-shape': 'triangle',
        'target-arrow-color': 'black',
-       'curve-style': 'bezier'
+       'curve-style': 'bezier',
+       'label': "data(interaction)"
    }},
     
-   {selector: "edge[interaction='catalyzes']", css: {
+   {selector: "edge[interaction='modifies']", css: {
        'line-color': 'gray',
        'arrow-scale': 2,
        'target-arrow-shape': 'triangle',

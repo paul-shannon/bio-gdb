@@ -2,8 +2,9 @@ library(PathwayParser)
 library(RUnit)
 library(RCyjs)
 library(EnsDb.Hsapiens.v79)
+library(later)
 #------------------------------------------------------------------------------------------------------------------------
-# 2nd reaction to test
+# 2nd reaction to test, #3
 #   <reaction compartment="compartment_17938"  id="reaction_165718"
 #      name="mTORC1 phosphorylation of RPS6KB1 (S6K)" reversible="false">
 #------------------------------------------------------------------------------------------------------------------------
@@ -36,7 +37,10 @@ runTests <- function()
    test_ctor()
    test_getReactants()
    test_getProducts()
+   test_getModifiers()
    test_molecularSpeciesMap()
+   test_eliminateUbiquitiousSpecies()
+   test_toEdgeAndNodeTables()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
@@ -71,6 +75,35 @@ test_getProducts <- function()
 
 } # test_getProducts
 #------------------------------------------------------------------------------------------------------------------------
+# reaction 2 in mTOR signaling hsa a modifier
+#   "Phosphorylation and activation of eIF4B by activated S6K1"
+# make sure we can find it here
+test_getModifiers <- function()
+{
+   message(sprintf("--- test_getModifiers"))
+
+   reaction.2 <- getReactionForTesting(2)
+   parser.2 <- ReactionParser$new(doc, reaction.2)
+   checkEquals(parser.2$getModifierCount(), 1)
+   checkEquals(sort(parser.2$getModifiers()), "species_165714")
+
+     # get the name - though it is an awkward one, not the simple "S6K1" we'd like
+     # wikipedia:
+     #   Ribosomal protein S6 kinase beta-1 (S6K1),
+     #   also known as p70S6 kinase (p70S6K, p70-S6K)
+     #   The phosphorylation of p70S6K at threonine 389 has been used as a hallmark of activation
+     #   by mTOR and correlated with autophagy inhibition in various situations. However, several
+     # recent studies suggest that the activity of p70S6K plays a more positive role in the increase
+     # of autophagy.
+
+   map <- parser.2$getMolecularSpeciesMap()
+   checkEquals(map[["species_165714"]]$name, "p-S371,T389-RPS6KB1")
+   checkEquals(map[["species_165714"]]$moleculeType, "molecule")
+   checkEquals(map[["species_165714"]]$compartment, "cytosol")
+   checkTrue(is.null(map[["species_165714"]]$members))
+
+} # test_getProducts
+#------------------------------------------------------------------------------------------------------------------------
 test_molecularSpeciesMap <- function()
 {
    message(sprintf("--- test_molecularSpeciesMap"))
@@ -81,35 +114,119 @@ test_molecularSpeciesMap <- function()
    counts <- as.list(table(moleculeTypes))
 
    checkEquals(counts$complex, 30)
-   checkEquals(counts$protein, 36)
+   checkEquals(counts$molecule, 36)
 
 } # test_getProducts
 #------------------------------------------------------------------------------------------------------------------------
 test_toEdgeAndNodeTables <- function()
 {
    message(sprintf("--- test_toEdgeAndNodeTables"))
-   x <- parser$toEdgeAndNodeTables()
+      # user reaction 2 in R-HSA-165159.sbml: 1 each of reactant, product, modifier
+   reaction.2 <- getReactionForTesting(2)
+   parser.tmp <- ReactionParser$new(doc, reaction.2)
+   checkEquals(parser.tmp$getReactantCount(), 2)
+   checkEquals(parser.tmp$getProductCount(), 2)
+   checkEquals(parser.tmp$getModifierCount(), 1)
+   checkEquals(sort(parser.tmp$getModifiers()), "species_165714")
+
+   x <- parser.tmp$toEdgeAndNodeTables()
+   checkEquals(sort(names(x)), c("edges", "nodes"))
+
+   checkEquals(dim(x$nodes), c(4, 3))
+   checkTrue("species_165714" %in% x$nodes$id)
+   checkTrue("p-S371,T389-RPS6KB1" %in% x$nodes$label)
+
+     # keep in mind that excludeUbiquitousSpecies is default TRUE
+   checkEquals(dim(x$edges), c(3, 3))
+   checkEquals(x$edges[3, "source"], "species_165714")
+   checkEquals(x$edges[3, "target"], "reaction_165777")
+   checkEquals(x$edges[3, "interaction"], "modifies")
+
+      # now get all species, including water, atp, adp if present
+   x <- parser.tmp$toEdgeAndNodeTables(excludeUbiquitousSpecies=FALSE)
+   checkEquals(sort(names(x)), c("edges", "nodes"))
+
+   checkEquals(dim(x$nodes), c(6, 3))
+   checkTrue(all(c("ATP", "ADP") %in% x$nodes$label))
+
+     # keep in mind that excludeUbiquitousSpecies is default TRUE
+   checkEquals(dim(x$edges), c(5, 3))
 
 } # test_toEdgeAndNodeTables
 #------------------------------------------------------------------------------------------------------------------------
 renderReaction <- function()
 {
-   if(!exists("rcy")){
-      rcy <- RCyjs()
-      setBrowserWindowTitle(rcy, "ReactionParser")
-      }
-
    x <- parser$toEdgeAndNodeTables()
-   g.json <- toJSON(dataFramesToJSON(x$edges, x$nodes)
+   g.json <- toJSON(dataFramesToJSON(x$edges, x$nodes))
    deleteGraph(rcy)
    addGraph(rcy, g.json)
    loadStyleFile(rcy, "style.js")
    layout(rcy, "cose")
-     # should more-or-less match layout seen in ./galactose_metabolism.svg
-   #restoreLayout(rcy, "layout-1.Rdata")
    fit(rcy)
 
 } # renderReaction
+#------------------------------------------------------------------------------------------------------------------------
+test_reaction_1 <- function()
+{
+   message(sprintf("--- test_reaction_1"))
+   reaction <- getReactionForTesting(1) #    # "FKBP1A binds sirolimus"
+   parser <- ReactionParser$new(doc, reaction)
+   x <- parser$toEdgeAndNodeTables()
+
+   g.json <- toJSON(dataFramesToJSON(x$edges, x$nodes))
+   deleteGraph(rcy)
+   addGraph(rcy, g.json)
+   loadStyleFile(rcy, "style.js")
+   layout(rcy, "cose")
+   fit(rcy)
+
+} # test_reaction_1
+#------------------------------------------------------------------------------------------------------------------------
+test_eliminateUbiquitiousSpecies <- function()
+{
+   message(sprintf("--- test_eliminateUbiquitousSpecies"))
+
+   reaction <- getReactionForTesting(3) #    # "FKBP1A binds sirolimus"
+   parser <- ReactionParser$new(doc, reaction)
+   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=FALSE)
+   checkEquals(nrow(x$nodes), 5)
+   checkEquals(nrow(x$edges), 4)
+
+   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=TRUE)
+   checkEquals(nrow(x$nodes), 3)
+   checkEquals(nrow(x$edges), 2)
+
+   x <- parser$toEdgeAndNodeTables()
+   checkEquals(nrow(x$nodes), 3)
+   checkEquals(nrow(x$edges), 2)
+
+} # test_eliminateUbiquitousSpecies
+#------------------------------------------------------------------------------------------------------------------------
+displayReaction <- function(i, exclude=TRUE, deleteExistingGraph=TRUE)
+{
+   if(!exists("rcy")){
+      rcy <<- RCyjs()
+      setBrowserWindowTitle(rcy, "ReactionParser")
+      }
+
+   reaction <- getReactionForTesting(i)
+   parser <- ReactionParser$new(doc, reaction)
+   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=TRUE)
+
+   g.json <- toJSON(dataFramesToJSON(x$edges, x$nodes))
+
+   if(deleteExistingGraph)
+      deleteGraph(rcy)
+
+   addGraph(rcy, g.json)
+   later(function(){
+      setBrowserWindowTitle(rcy, sprintf("%d: %s", i, parser$getName()))
+      loadStyleFile(rcy, "style.js")
+      layout(rcy, "cose")
+      fit(rcy)
+      }, 2)
+
+} # displayReaction
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
     runTests()

@@ -26,9 +26,11 @@ reactant (species) ids
 
 an integer count
 
-modifier (species) ids
+product (species) ids
 
 an integer count
+
+character (species) ids
 
 a named list, edges and nodes, each a data.frame
 }
@@ -55,6 +57,7 @@ import xml2
 \item \href{#method-getProductCount}{\code{ReactionParser$getProductCount()}}
 \item \href{#method-getProducts}{\code{ReactionParser$getProducts()}}
 \item \href{#method-getModifierCount}{\code{ReactionParser$getModifierCount()}}
+\item \href{#method-getModifiers}{\code{ReactionParser$getModifiers()}}
 \item \href{#method-toEdgeAndNodeTables}{\code{ReactionParser$toEdgeAndNodeTables()}}
 \item \href{#method-clone}{\code{ReactionParser$clone()}}
 }
@@ -186,7 +189,7 @@ one (zero?) or more products are produced by each reaction
 \if{html}{\out{<a id="method-getProducts"></a>}}
 \if{latex}{\out{\hypertarget{method-getProducts}{}}}
 \subsection{Method \code{getProducts()}}{
-get the species identifiers for all modifiers
+get the species identifiers for all products
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ReactionParser$getProducts()}\if{html}{\out{</div>}}
 }
@@ -196,9 +199,19 @@ get the species identifiers for all modifiers
 \if{html}{\out{<a id="method-getModifierCount"></a>}}
 \if{latex}{\out{\hypertarget{method-getModifierCount}{}}}
 \subsection{Method \code{getModifierCount()}}{
-one (zero?) or more modifiers are produced by each reaction
+zero or more modifiers are active in each reaction
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ReactionParser$getModifierCount()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getModifiers"></a>}}
+\if{latex}{\out{\hypertarget{method-getModifiers}{}}}
+\subsection{Method \code{getModifiers()}}{
+get the species identifiers for all modifiers
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ReactionParser$getModifiers()}\if{html}{\out{</div>}}
 }
 
 }
@@ -209,9 +222,16 @@ one (zero?) or more modifiers are produced by each reaction
 cytoscape.js various databases (sql, neo4j, dc) represent data in tables.
 create them here
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ReactionParser$toEdgeAndNodeTables()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ReactionParser$toEdgeAndNodeTables(excludeUbiquitousSpecies = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{excludeUbiquitousSpeces}}{logical, default TRUE: ATP, ADP, water}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
