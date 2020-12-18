@@ -202,7 +202,7 @@ test_eliminateUbiquitiousSpecies <- function()
 
 } # test_eliminateUbiquitousSpecies
 #------------------------------------------------------------------------------------------------------------------------
-displayReaction <- function(i, exclude=TRUE, deleteExistingGraph=TRUE)
+displayReaction <- function(i, exclude=TRUE, deleteExistingGraph=TRUE, includeComplexMembers=FALSE)
 {
    if(!exists("rcy")){
       rcy <<- RCyjs()
@@ -211,7 +211,7 @@ displayReaction <- function(i, exclude=TRUE, deleteExistingGraph=TRUE)
 
    reaction <- getReactionForTesting(i)
    parser <- ReactionParser$new(doc, reaction)
-   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=TRUE)
+   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=TRUE, includeComplexMembers)
 
    g.json <- toJSON(dataFramesToJSON(x$edges, x$nodes))
 
@@ -222,7 +222,7 @@ displayReaction <- function(i, exclude=TRUE, deleteExistingGraph=TRUE)
    later(function(){
       setBrowserWindowTitle(rcy, sprintf("%d: %s", i, parser$getName()))
       loadStyleFile(rcy, "style.js")
-      layout(rcy, "cose")
+      layout(rcy, "cose-bilkent")
       fit(rcy)
       }, 2)
 

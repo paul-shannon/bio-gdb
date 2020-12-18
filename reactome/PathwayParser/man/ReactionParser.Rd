@@ -222,7 +222,10 @@ get the species identifiers for all modifiers
 cytoscape.js various databases (sql, neo4j, dc) represent data in tables.
 create them here
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ReactionParser$toEdgeAndNodeTables(excludeUbiquitousSpecies = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ReactionParser$toEdgeAndNodeTables(
+  excludeUbiquitousSpecies = TRUE,
+  includeComplexMembers
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

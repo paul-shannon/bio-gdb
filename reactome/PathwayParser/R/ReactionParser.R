@@ -160,7 +160,7 @@ ReactionParser = R6Class("ReactionParser",
         #' @param excludeUbiquitousSpeces logical, default TRUE: ATP, ADP, water
         #' @returns a named list, edges and nodes, each a data.frame
 
-      toEdgeAndNodeTables = function(excludeUbiquitousSpecies=TRUE){
+      toEdgeAndNodeTables = function(excludeUbiquitousSpecies=TRUE, includeComplexMembers){
           atp <- "species_113592"
           adp <- "species_29370"
           amp <- "species_76577"
@@ -189,6 +189,8 @@ ReactionParser = R6Class("ReactionParser",
           map <- self$getMolecularSpeciesMap()
 
           nodes.all <- with(tbl.edges, unique(c(source, target)))
+             # add all the complex members
+
           nodes.species <- intersect(nodes.all, names(map))
           nodes.other   <- setdiff(nodes.all, names(map))
           assignNodeType <- function(node.id){
@@ -225,13 +227,30 @@ ReactionParser = R6Class("ReactionParser",
           tbl.nodes <- data.frame(id=nodes.all,
                                   type=unlist(lapply(nodes.all, assignNodeType)),
                                   label=unlist(lapply(nodes.all, assignNodeName)),
+                                  parent=rep("", length(nodes.all)),
                                   stringsAsFactors=FALSE)
+          complex.members <- lapply(species, function(sp) map[[sp]]$members)
+          names(complex.members) <- species
+          tbls.complex <- lapply(names(complex.members), function(parent.node){
+              member.proteins <- complex.members[[parent.node]]
+              data.frame(id=member.proteins,
+                         type=rep("complexMember", length(member.proteins)),
+                         label=member.proteins,
+                         parent=rep(parent.node, length(member.proteins)),
+                         stringsAsFactors=FALSE)
+              })
+          tbl.complex <- do.call(rbind, tbls.complex)
+          tbl.nodes.all <- tbl.nodes
+          if(includeComplexMembers)
+             tbl.nodes.all <- rbind(tbl.nodes, tbl.complex)
+
+          tbl.nodes.all$id <- make.names(tbl.nodes.all$id, unique=TRUE)
 
           if(excludeUbiquitousSpecies){
-             deleters <- match(inconsequentials, tbl.nodes$id)
+             deleters <- match(inconsequentials, tbl.nodes.all$id)
              deleters <- deleters[complete.cases(deleters)]
              if(length(deleters) > 0)
-                tbl.nodes <- tbl.nodes[-deleters,]
+                tbl.nodes.all <- tbl.nodes.all[-deleters,]
              deleters <- match(inconsequentials, tbl.edges$source)
              deleters <- deleters[complete.cases(deleters)]
              if(length(deleters) > 0)
@@ -241,7 +260,7 @@ ReactionParser = R6Class("ReactionParser",
              if(length(deleters) > 0)
                 tbl.edges <- tbl.edges[-deleters,]
              } # if excludeUbiquitousSpecies
-          return(list(edges=tbl.edges, nodes=tbl.nodes))
+          return(list(edges=tbl.edges, nodes=tbl.nodes.all))
           }
      ) # public
   ) # class

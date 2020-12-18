@@ -1,13 +1,22 @@
 vizmap = [
 
    {selector:"node", css: {
-       "text-valign":"center",
+       "text-valign":"top",
        "text-halign":"center",
        "background-color": "lightgreen",
        "border-color": "black",
        "content": "data(label)",
        "border-width": "1px"
    }},
+
+    {selector:"node[type='molecule']", css: {
+       "text-valign":"center",
+       "text-halign":"center",
+	"shape": "ellipse",
+        "width": "120px;",
+	"height": "120px;",
+	"background-color": "#D0FFD0"
+        }},
 
     {selector:"node[type='metabolite']", css: {
 	"shape": "ellipse",
@@ -26,6 +35,8 @@ vizmap = [
         }},
 
     {selector:"node[type='reaction']", css: {
+       "text-valign":"center",
+       "text-halign":"center",
 	"shape": "round-diamond",
         "width": "200px;",
 	"height": "100px;",
@@ -48,20 +59,22 @@ vizmap = [
 	"font-size": "20px"
         }},
 
-    {selector:"node[type='complexMember']", css: {
-	"shape": "hexagon",
-        "width": "100px;",
-	"height": "100px;",
-	"background-color": "lightgreen",
-	"font-size": "20px"
-        }},
-
     {selector:"node[type='pathway']", css: {
 	"shape": "round-triangle",
         "width": "60px;",
 	"height": "60px;",
 	"background-color": "lightblue",
 	"font-size": "10px"
+        }},
+
+    {selector:"node[type='complexMember']", css: {
+        "text-valign":"center",
+        "text-halign":"center",
+	"shape": "ellipse",
+        "width": "30px;",
+	"height": "30px;",
+	"background-color": "white",
+	"font-size": "8px"
         }},
 
    {selector:"node:selected", css: {
@@ -82,7 +95,7 @@ vizmap = [
        'target-arrow-color': 'black',
        'curve-style': 'bezier',
        'label': "data(interaction)"
-   }},
+       }},
     
    {selector: "edge[interaction='modifies']", css: {
        'line-color': 'gray',
