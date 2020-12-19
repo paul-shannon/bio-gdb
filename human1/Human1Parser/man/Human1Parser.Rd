@@ -4,7 +4,11 @@
 \alias{Human1Parser}
 \title{Human1Parser}
 \value{
+the document object, an instance of XMLInternalDocument, XMLAbstractDocument
+
 a names list of counts
+
+long name
 
 two data.frames: species and speciesRefs
 
@@ -21,7 +25,9 @@ import XML
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Human1Parser$new()}}
+\item \href{#method-getDoc}{\code{Human1Parser$getDoc()}}
 \item \href{#method-getCounts}{\code{Human1Parser$getCounts()}}
+\item \href{#method-getCompartment}{\code{Human1Parser$getCompartment()}}
 \item \href{#method-getSpecies}{\code{Human1Parser$getSpecies()}}
 \item \href{#method-getReaction}{\code{Human1Parser$getReaction()}}
 \item \href{#method-clone}{\code{Human1Parser$clone()}}
@@ -41,6 +47,16 @@ a new `Human1Parser` object.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getDoc"></a>}}
+\if{latex}{\out{\hypertarget{method-getDoc}{}}}
+\subsection{Method \code{getDoc()}}{
+retrieve the xml document
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getDoc()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getCounts"></a>}}
 \if{latex}{\out{\hypertarget{method-getCounts}{}}}
 \subsection{Method \code{getCounts()}}{
@@ -49,6 +65,23 @@ learn the elements and their count
 \if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getCounts()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getCompartment"></a>}}
+\if{latex}{\out{\hypertarget{method-getCompartment}{}}}
+\subsection{Method \code{getCompartment()}}{
+retrieve the long descriptive name of the cellular compartment in which a species is found
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getCompartment(shortName)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{shortName}}{character, e.g. "s"   "p"   "m"   "c"   "l"   "r"   "g"   "n"   "c_i"}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getSpecies"></a>}}

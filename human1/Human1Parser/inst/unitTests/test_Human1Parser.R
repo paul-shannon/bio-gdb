@@ -13,6 +13,7 @@ runTests <- function()
 {
    test_ctor()
    test_counts()
+   test_getCompartment()
    test_getReaction()
    test_getSpecies()
 
@@ -37,6 +38,26 @@ test_counts <- function()
    checkEquals(counts$groups, 142)
 
 } # test_counts
+#------------------------------------------------------------------------------------------------------------------------
+test_getCompartment <- function()
+{
+   message(sprintf("--- test_getCompartment"))
+
+
+   checkEquals(hp$getCompartment("s"),  "Extracellular")
+   checkEquals(hp$getCompartment("p"),  "Peroxisome")
+   checkEquals(hp$getCompartment("m"),  "Mitochondria")
+   checkEquals(hp$getCompartment("c"),  "Cytosol")
+   checkEquals(hp$getCompartment("l"),  "Lysosome")
+   checkEquals(hp$getCompartment("r"),  "Endoplasmic reticulum")
+   checkEquals(hp$getCompartment("g"),  "Golgi apparatus")
+   checkEquals(hp$getCompartment("n"),  "Nucleus")
+   checkEquals(hp$getCompartment("c_i"), "Inner mitochondria")
+   checkTrue(is.na(hp$getCompartment("")))
+   checkTrue(is.na(hp$getCompartment("x")))
+   checkTrue(is.na(hp$getCompartment("bogus")))
+
+} # test_getCompartment
 #------------------------------------------------------------------------------------------------------------------------
 # the drug acarbose inhibits this reaction, making it interesting to longevity researchers
 test_getReaction <- function()

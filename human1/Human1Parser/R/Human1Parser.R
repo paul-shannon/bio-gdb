@@ -15,8 +15,15 @@ Human1Parser = R6Class("Human1Parser",
     private = list(
         doc = NULL,
         xml.node = NULL,
-        molecularSpeciesMap = NULL
+        compartmentMap = NULL,
+        molecularSpeciesMap = NULL,
 
+        parseCompartments = function(){
+           long.names <- as.character(getNodeSet(private$doc, "//listOfCompartments/compartment/@name"))
+           ids <- as.character(getNodeSet(private$doc, "//listOfCompartments/compartment/@id"))
+           names(long.names) <- ids
+           private$compartmentMap <- long.names
+           }
         ), # private
 
         #' @description
@@ -28,7 +35,16 @@ Human1Parser = R6Class("Human1Parser",
       initialize = function(xml.filename){
          stopifnot(file.exists(xml.filename))
          private$doc <- xmlParse(filename)
+         private$parseCompartments()
          },
+
+      #----------------------------------------------------------------------------------------------------
+      #' @description
+      #' retrieve the xml document
+      #' @returns the document object, an instance of XMLInternalDocument, XMLAbstractDocument
+      getDoc = function(){
+          invisible(private$doc)
+          },
 
       #----------------------------------------------------------------------------------------------------
       #' @description
@@ -43,6 +59,17 @@ Human1Parser = R6Class("Human1Parser",
               groups=length(xmlChildren(model[["listOfGroups"]]))
               )
          }, # getCounts
+
+      #----------------------------------------------------------------------------------------------------
+      #' @description
+      #' retrieve the long descriptive name of the cellular compartment in which a species is found
+      #' @param shortName character, e.g. "s"   "p"   "m"   "c"   "l"   "r"   "g"   "n"   "c_i"
+      #' @returns long name
+      getCompartment = function(shortName){
+         if(!shortName %in% names(private$compartmentMap))
+              return(NA_character_)
+         private$compartmentMap[[shortName]]
+         },
 
       #----------------------------------------------------------------------------------------------------
       #' @description
@@ -147,7 +174,18 @@ Human1Parser = R6Class("Human1Parser",
              products=tbl.products,
              genes=genes
              ))
-        } # getReaction
+         }, # getReaction
+
+        #' @description
+        #' cytoscape.js various databases (sql, neo4j, dc) represent data in tables.
+        #' create them here
+        #' @param excludeUbiquitousSpeces logical, default TRUE: ATP, ADP, water
+        #' @returns a named list, edges and nodes, each a data.frame
+
+      toEdgeAndNodeTables = function(excludeUbiquitousSpecies=TRUE, includeComplexMembers){
+          return(list(edges=data.frame(), nodes=data.frame()))
+          }
+
      ) # public
   ) # class
 
