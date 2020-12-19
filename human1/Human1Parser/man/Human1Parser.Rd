@@ -5,6 +5,10 @@
 \title{Human1Parser}
 \value{
 a names list of counts
+
+two data.frames: species and speciesRefs
+
+a list of data.frames: reaction, reactionrefs, reactants, products, a list of genes
 }
 \description{
 an R6 class which parses xml Human1 reactions into data.frames
@@ -18,6 +22,8 @@ import XML
 \itemize{
 \item \href{#method-new}{\code{Human1Parser$new()}}
 \item \href{#method-getCounts}{\code{Human1Parser$getCounts()}}
+\item \href{#method-getSpecies}{\code{Human1Parser$getSpecies()}}
+\item \href{#method-getReaction}{\code{Human1Parser$getReaction()}}
 \item \href{#method-clone}{\code{Human1Parser$clone()}}
 }
 }
@@ -43,6 +49,40 @@ learn the elements and their count
 \if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getCounts()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getSpecies"></a>}}
+\if{latex}{\out{\hypertarget{method-getSpecies}{}}}
+\subsection{Method \code{getSpecies()}}{
+extract one molecular species
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getSpecies(n)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{integer the index of the reaction}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getReaction"></a>}}
+\if{latex}{\out{\hypertarget{method-getReaction}{}}}
+\subsection{Method \code{getReaction()}}{
+extract one reaction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getReaction(n)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{integer the index of the reaction}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
