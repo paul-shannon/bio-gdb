@@ -1,0 +1,18 @@
+Package: Human1Parser
+Type: Package
+Title: Human1Parer
+Version: 1.0.2
+Date: 2020-12-17
+Author: Paul Shannon
+Maintainer: Paul Shannon <paul.thurmond.shannon@gmail.com>
+Depends: R (>= 3.5.0), XML, R6
+Suggests: RUnit, BiocStyle, knitr, rmarkdown
+Description: parser for xml human1 metabolic network
+License: MIT + file LICENSE
+LazyLoad: yes
+NeedsCompilation: no
+Packaged: 2018-03-22 20:02:10 UTC; paul
+VignetteBuilder:
+  knitr
+Encoding: UTF-8
+RoxygenNote: 7.1.1

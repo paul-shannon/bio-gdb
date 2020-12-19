@@ -1,0 +1,6 @@
+s/rdf://g
+s/dcterms://g
+s/groups://g
+s/fbc://g
+s/bqbiol://g
+s/<sbml.*/<sbml>/
