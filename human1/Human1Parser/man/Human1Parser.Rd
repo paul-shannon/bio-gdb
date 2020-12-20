@@ -13,6 +13,8 @@ long name
 two data.frames: species and speciesRefs
 
 a list of data.frames: reaction, reactionrefs, reactants, products, a list of genes
+
+a named list, edges and nodes, each a data.frame
 }
 \description{
 an R6 class which parses xml Human1 reactions into data.frames
@@ -30,6 +32,7 @@ import XML
 \item \href{#method-getCompartment}{\code{Human1Parser$getCompartment()}}
 \item \href{#method-getSpecies}{\code{Human1Parser$getSpecies()}}
 \item \href{#method-getReaction}{\code{Human1Parser$getReaction()}}
+\item \href{#method-getEdgeAndNodeTables}{\code{Human1Parser$getEdgeAndNodeTables()}}
 \item \href{#method-clone}{\code{Human1Parser$clone()}}
 }
 }
@@ -113,6 +116,32 @@ extract one reaction
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{n}}{integer the index of the reaction}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getEdgeAndNodeTables"></a>}}
+\if{latex}{\out{\hypertarget{method-getEdgeAndNodeTables}{}}}
+\subsection{Method \code{getEdgeAndNodeTables()}}{
+cytoscape.js and various databases (sql, neo4j, dc) represent data in tables.
+create them here
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getEdgeAndNodeTables(
+  n,
+  excludeUbiquitousSpecies = TRUE,
+  includeComplexMembers
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{integer reaction number}
+
+\item{\code{includeComplexMembers}}{logical, create edges between each complex and its constituents}
+
+\item{\code{excludeUbiquitousSpeces}}{logical, default TRUE: ATP, ADP, water}
 }
 \if{html}{\out{</div>}}
 }

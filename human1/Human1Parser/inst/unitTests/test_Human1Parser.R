@@ -16,6 +16,7 @@ runTests <- function()
    test_getCompartment()
    test_getReaction()
    test_getSpecies()
+   test_getEdgeAndNodeTables()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
@@ -93,6 +94,19 @@ test_getSpecies <- function()
    checkTrue(all(c("glc__D", "C00031", "HMDB00122", "CHEBI:4167", "5793", "MNXM41", "MNXM99") %in% r$speciesRefs$value))
 
 } # test_getSpecies
+#------------------------------------------------------------------------------------------------------------------------
+test_getEdgeAndNodeTables <- function()
+{
+    message(sprintf("--- test_toEdgeAndNodeTables"))
+    x <- hp$getEdgeAndNodeTables(1, excludeUbiquitousSpecies=TRUE, includeComplexMembers=TRUE)
+    checkTrue(is.list(x))
+    checkEquals(names(x), c("edges", "nodes"))
+    checkTrue(all(unlist(lapply(x, is.data.frame))))
+    checkTrue(all(c("reactantFor", "produces", "catalyzes") %in% x$edges$interaction))
+    checkEquals(colnames(x$edges), c("source", "target", "interaction"))
+    checkEquals(unique(as.character(lapply(x$edges, class))), "character")
+
+} # test_toEdgeAndNodeTables
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
     runTests()

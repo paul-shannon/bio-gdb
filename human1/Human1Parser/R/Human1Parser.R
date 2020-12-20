@@ -121,7 +121,7 @@ Human1Parser = R6Class("Human1Parser",
          reaction <- getNodeSet(private$doc, sprintf("(//reaction)[%d]", n))
          tbl.reaction <- with(as.list(xmlAttrs(reaction[[1]])),
                               data.frame(id=id,
-                                         name=name,
+                                         #name=name,
                                          reversible=reversible,
                                          fast=fast,
                                          lowerFluxBound=lowerFluxBound,
@@ -177,14 +177,32 @@ Human1Parser = R6Class("Human1Parser",
          }, # getReaction
 
         #' @description
-        #' cytoscape.js various databases (sql, neo4j, dc) represent data in tables.
+        #' cytoscape.js and various databases (sql, neo4j, dc) represent data in tables.
         #' create them here
+        #' @param n integer reaction number
         #' @param excludeUbiquitousSpeces logical, default TRUE: ATP, ADP, water
+        #' @param includeComplexMembers logical, create edges between each complex and its constituents
         #' @returns a named list, edges and nodes, each a data.frame
 
-      toEdgeAndNodeTables = function(excludeUbiquitousSpecies=TRUE, includeComplexMembers){
-          return(list(edges=data.frame(), nodes=data.frame()))
-          }
+      getEdgeAndNodeTables = function(n, excludeUbiquitousSpecies=TRUE, includeComplexMembers){
+         r <- self$getReaction(n)
+         reactants <- r$reactants$species
+         tbl.in <- data.frame(source=reactants,
+                              target=rep(r$reaction$id, length(reactants)),
+                              interaction=rep("reactantFor", length(reactants)),
+                              stringsAsFactors=FALSE)
+         products <- r$products$species
+         tbl.out <- data.frame(source=rep(r$reaction$id, length(products)),
+                              target=products,
+                              interaction=rep("produces", length(products)),
+                              stringsAsFactors=FALSE)
+         tbl.genes <- data.frame(source=r$genes,
+                                 target=rep(r$reaction$id, length(r$genes)),
+                                 interaction=rep("catalyzes", length(r$genes)),
+                                 stringsAsFactors=FALSE)
+         tbl.edges <- rbind(tbl.in, tbl.out, tbl.genes)
+         return(list(edges=tbl.edges, nodes=data.frame()))
+         } # getEdgeAndNodeTables
 
      ) # public
   ) # class
