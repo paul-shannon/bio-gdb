@@ -24,7 +24,7 @@ Human1Parser = R6Class("Human1Parser",
            ids <- as.character(getNodeSet(private$doc, "//listOfCompartments/compartment/@id"))
            names(long.names) <- ids
            private$compartmentMap <- long.names
-           },
+           }
 
         ), # private
 
@@ -38,7 +38,7 @@ Human1Parser = R6Class("Human1Parser",
          stopifnot(file.exists(xml.filename))
          private$doc <- xmlParse(filename)
          private$parseCompartments()
-         private$extractGeneProductMap()
+         # private$extractGeneProductMap()
          },
 
       #----------------------------------------------------------------------------------------------------
@@ -213,7 +213,6 @@ Human1Parser = R6Class("Human1Parser",
                                  interaction=rep("catalyzes", length(r$genes)),
                                  stringsAsFactors=FALSE)
          tbl.edges <- rbind(tbl.in, tbl.out, tbl.genes)
-         browser()
 
          nodes.all <- with(tbl.edges, unique(c(source, target)))
 

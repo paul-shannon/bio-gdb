@@ -68,7 +68,7 @@ test_getReaction <- function()
    r <- hp$getReaction(8531)
    checkTrue(all(c("reaction", "reactionRefs", "reactants", "products", "genes") %in% names(r)))
    checkEquals(r$reaction$id, "R_O16G1e")
-   checkEquals(r$reaction$name, "Oligo-1, 6-Glucosidase (Glygn4 -> Glygn5), Extracellular")
+   # checkEquals(r$reaction$name, "Oligo-1, 6-Glucosidase (Glygn4 -> Glygn5), Extracellular")
    tbl.refs <- r$reactionRefs
    checkEquals(dim(tbl.refs), c(3, 2))
    checkEquals(sort(tbl.refs$value), c("3.2.1.10", "MNXR102083","O16G1e"))
@@ -94,12 +94,6 @@ test_getSpecies <- function()
    checkTrue(all(c("glc__D", "C00031", "HMDB00122", "CHEBI:4167", "5793", "MNXM41", "MNXM99") %in% r$speciesRefs$value))
 
 } # test_getSpecies
-#------------------------------------------------------------------------------------------------------------------------
-test_geneProductMap <- function()
-{
-    message(sprintf("--- test_geneProductMap"))
-
-} # test_geneProductMap
 #------------------------------------------------------------------------------------------------------------------------
 test_getEdgeAndNodeTables <- function()
 {
