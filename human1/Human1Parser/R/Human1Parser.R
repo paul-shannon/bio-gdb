@@ -17,13 +17,15 @@ Human1Parser = R6Class("Human1Parser",
         xml.node = NULL,
         compartmentMap = NULL,
         molecularSpeciesMap = NULL,
+        geneProductMap = NULL,
 
         parseCompartments = function(){
            long.names <- as.character(getNodeSet(private$doc, "//listOfCompartments/compartment/@name"))
            ids <- as.character(getNodeSet(private$doc, "//listOfCompartments/compartment/@id"))
            names(long.names) <- ids
            private$compartmentMap <- long.names
-           }
+           },
+
         ), # private
 
         #' @description
@@ -36,6 +38,7 @@ Human1Parser = R6Class("Human1Parser",
          stopifnot(file.exists(xml.filename))
          private$doc <- xmlParse(filename)
          private$parseCompartments()
+         private$extractGeneProductMap()
          },
 
       #----------------------------------------------------------------------------------------------------
@@ -59,6 +62,14 @@ Human1Parser = R6Class("Human1Parser",
               groups=length(xmlChildren(model[["listOfGroups"]]))
               )
          }, # getCounts
+
+      #----------------------------------------------------------------------------------------------------
+      #' @description
+      #' retrieve the association of geneProduct id and other identifiers
+      #' @returns a data.frame, one row per geneProduct
+      getGetProductMap = function(){
+         private$geneProductMap
+         },
 
       #----------------------------------------------------------------------------------------------------
       #' @description
@@ -112,6 +123,7 @@ Human1Parser = R6Class("Human1Parser",
              )
 
          }, # getSpecies
+
       #----------------------------------------------------------------------------------------------------
       #' @description
       #' extract one reaction
@@ -201,6 +213,49 @@ Human1Parser = R6Class("Human1Parser",
                                  interaction=rep("catalyzes", length(r$genes)),
                                  stringsAsFactors=FALSE)
          tbl.edges <- rbind(tbl.in, tbl.out, tbl.genes)
+         browser()
+
+         nodes.all <- with(tbl.edges, unique(c(source, target)))
+
+         #nodes.species <- intersect(nodes.all, names(map))
+         #nodes.other   <- setdiff(nodes.all, names(map))
+         #assignNodeType <- function(node.id){
+         #     if(node.id == "species_9678687")
+         #         return("drug")
+         #     if(grepl("^reaction_", node.id))
+         #         return("reaction")
+         #     if(grepl("^uniprotkb:", node.id))
+         #         return("protein")
+         #     if(grepl("^ligandId:", node.id))
+         #         return("ligand")
+         #     if(grepl("^species_", node.id))
+         #         return(map[[node.id]]$moleculeType)
+         #     return("unrecognized")
+         # } # assignNodeType
+         #
+         #assignNodeName <- function(node.id){
+         #     if(node.id %in% c("species_9678687", "ligandId:6031"))
+         #         return("rapamycin")
+         #     if(grepl("^reaction_", node.id))
+         #         return(self$getName())
+         #     if(grepl("^uniprotkb:", node.id))
+         #         return(select(EnsDb.Hsapiens.v79,
+         #                       key=sub("uniprotkb:", "", node.id),
+         #                       keytype="UNIPROTID",
+         #                       columns=c("SYMBOL"))$SYMBOL)
+         #     if(grepl("^ligandId:", node.id))
+         #         return(node.id)
+         #     if(grepl("^species_", node.id))
+         #         return(map[[node.id]]$name)
+         #     return(node.id)
+         # } # addingNodeName
+
+         # tbl.nodes <- data.frame(id=nodes.all,
+         #                         type=unlist(lapply(nodes.all, assignNodeType)),
+         #                         label=unlist(lapply(nodes.all, assignNodeName)),
+         #                         parent=rep("", length(nodes.all)),
+         #                         stringsAsFactors=FALSE)
+
          return(list(edges=tbl.edges, nodes=data.frame()))
          } # getEdgeAndNodeTables
 

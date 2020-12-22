@@ -95,10 +95,19 @@ test_getSpecies <- function()
 
 } # test_getSpecies
 #------------------------------------------------------------------------------------------------------------------------
+test_geneProductMap <- function()
+{
+    message(sprintf("--- test_geneProductMap"))
+
+} # test_geneProductMap
+#------------------------------------------------------------------------------------------------------------------------
 test_getEdgeAndNodeTables <- function()
 {
     message(sprintf("--- test_toEdgeAndNodeTables"))
-    x <- hp$getEdgeAndNodeTables(1, excludeUbiquitousSpecies=TRUE, includeComplexMembers=TRUE)
+     # 17: phosphopyruvate hydratase, 1 reactant, 2 products 3 catalyzers
+     #  eno1, eno3, eno2
+    reactionNumber <- 17
+    x <- hp$getEdgeAndNodeTables(reactionNumber, excludeUbiquitousSpecies=TRUE, includeComplexMembers=TRUE)
     checkTrue(is.list(x))
     checkEquals(names(x), c("edges", "nodes"))
     checkTrue(all(unlist(lapply(x, is.data.frame))))

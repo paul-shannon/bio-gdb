@@ -1,8 +1,8 @@
 Package: Human1Parser
 Type: Package
 Title: Human1Parer
-Version: 1.0.2
-Date: 2020-12-17
+Version: 1.0.3
+Date: 2020-12-21
 Author: Paul Shannon
 Maintainer: Paul Shannon <paul.thurmond.shannon@gmail.com>
 Depends: R (>= 3.5.0), XML, R6
