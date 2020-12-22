@@ -111,5 +111,30 @@ test_getEdgeAndNodeTables <- function()
 
 } # test_toEdgeAndNodeTables
 #------------------------------------------------------------------------------------------------------------------------
+displayReaction <- function(i, exclude=TRUE, deleteExistingGraph=TRUE, includeComplexMembers=FALSE)
+{
+   if(!exists("rcy")){
+      rcy <<- RCyjs()
+      setBrowserWindowTitle(rcy, "ReactionParser")
+      }
+
+   reactionNumber <- 8531 #
+   x <- hp$getEdgeAndNodeTables(reactionNumber, excludeUbiquitousSpecies=TRUE, includeComplexMembers=TRUE)
+
+   g.json <- toJSON(dataFramesToJSON(x$edges)) # , x$nodes))
+
+   if(deleteExistingGraph)
+      deleteGraph(rcy)
+
+   addGraph(rcy, g.json)
+   later(function(){
+      #setBrowserWindowTitle(rcy, sprintf("%d: %s", i, parser$getName()))
+      loadStyleFile(rcy, "style.js")
+      layout(rcy, "cose-bilkent")
+      fit(rcy)
+      }, 2)
+
+} # displayReaction
+#------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
     runTests()

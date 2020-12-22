@@ -18,14 +18,7 @@ Human1Parser = R6Class("Human1Parser",
         compartmentMap = NULL,
         molecularSpeciesMap = NULL,
         geneProductMap = NULL,
-
-        parseCompartments = function(){
-           long.names <- as.character(getNodeSet(private$doc, "//listOfCompartments/compartment/@name"))
-           ids <- as.character(getNodeSet(private$doc, "//listOfCompartments/compartment/@id"))
-           names(long.names) <- ids
-           private$compartmentMap <- long.names
-           }
-
+        reactionMap = NULL
         ), # private
 
         #' @description
@@ -37,8 +30,16 @@ Human1Parser = R6Class("Human1Parser",
       initialize = function(xml.filename){
          stopifnot(file.exists(xml.filename))
          private$doc <- xmlParse(filename)
-         private$parseCompartments()
-         # private$extractGeneProductMap()
+         private$compartmentMap <- get(load(system.file(package="Human1Parser",
+                                                        "extdata" ,"compartments.RData")))
+         private$molecularSpeciesMap <- get(load(system.file(package="Human1Parser",
+                                                             "extdata" ,"tbl.speciesIdMap.RData")))
+         private$geneProductMap <-  get(load(system.file(package="Human1Parser",
+                                                         "extdata" ,"tbl.geneProductIdMap.RData")))
+         private$reactionMap <-  get(load(system.file(package="Human1Parser",
+                                                      "extdata" ,"tbl.reactionIdMap.RData")))
+         private$groupsMap <-  get(load(system.file(package="Human1Parser",
+                                                      "extdata" ,"tbl.groups.RData")))
          },
 
       #----------------------------------------------------------------------------------------------------

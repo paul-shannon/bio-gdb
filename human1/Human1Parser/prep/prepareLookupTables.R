@@ -180,7 +180,7 @@ run.extractReactionMap <- function()
 
 } # run.extractReactionMap
 #----------------------------------------------------------------------------------------------------
-extractGroupMap = function(i)
+extractGroupMap <- function(i)
 {
    if((i %% 100) == 0) printf("extracting group entry %d", i)
 
@@ -205,12 +205,6 @@ test_extractGroupMap <- function()
     checkEquals(names(x), c("id", "name", "members"))
 
 } # test_extractGroupMap
-#----------------------------------------------------------------------------------------------------
-transformGroupListsToTable <- function(x)
-{
-
-
-} # transformGroupListsToTable
 #----------------------------------------------------------------------------------------------------
 run.extractGroupMap <- function()
 {
@@ -240,7 +234,38 @@ run.extractGroupMap <- function()
 
 } # run.extractGroupMap
 #----------------------------------------------------------------------------------------------------
+extractCompartmentMap <- function(i)
+{
+   path <- sprintf("//listOfCompartments/compartment[%d]", i)
+   getNodeSet(doc, path)
+   path <- sprintf("//listOfCompartments/compartment[%d]/@id", i)
+   id <- as.character(getNodeSet(doc, path))
+   list(id=id, name=name)
 
+} # extractCompartmentMap
+#----------------------------------------------------------------------------------------------------
+test_extractCompartmentMap <- function()
+{
+    message(sprintf("--- test_extractCompartmentMap"))
+    x <- extractCompartmentMap(1)
+    checkTrue(is.list(x))
+    checkEquals(names(x), c("id", "name"))
 
+} # test_extractCompartmentMap
+#----------------------------------------------------------------------------------------------------
+run.extractCompartmentMap <- function()
+{
+   count <-  length(getNodeSet(doc, "//listOfCompartments/compartment")) # 9
+   printf("compartmentMap count: %d", count)
+   maps <- lapply(seq_len(count), extractCompartmentMap)
 
+   long.names <- as.list(unlist(lapply(maps, function(map) map[["name"]])))
+   short.names <- unlist(lapply(maps, function(map) map[["id"]]))
+   names(long.names) <- short.names
+   compartments.map <- long.names
 
+   out.file <- "~/github/bio-gdb/human1/Human1Parser/inst/extdata/compartments.RData"
+   save(compartments.map, file=out.file)
+
+} # run.extractCompartmentMap
+#----------------------------------------------------------------------------------------------------
