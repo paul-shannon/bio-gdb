@@ -236,10 +236,10 @@ run.extractGroupMap <- function()
 #----------------------------------------------------------------------------------------------------
 extractCompartmentMap <- function(i)
 {
-   path <- sprintf("//listOfCompartments/compartment[%d]", i)
-   getNodeSet(doc, path)
    path <- sprintf("//listOfCompartments/compartment[%d]/@id", i)
    id <- as.character(getNodeSet(doc, path))
+   path <- sprintf("//listOfCompartments/compartment[%d]/@name", i)
+   name <- as.character(getNodeSet(doc, path))
    list(id=id, name=name)
 
 } # extractCompartmentMap

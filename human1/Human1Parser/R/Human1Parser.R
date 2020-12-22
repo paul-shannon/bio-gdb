@@ -18,12 +18,13 @@ Human1Parser = R6Class("Human1Parser",
         compartmentMap = NULL,
         molecularSpeciesMap = NULL,
         geneProductMap = NULL,
-        reactionMap = NULL
+        reactionMap = NULL,
+        groupsMap = NULL
         ), # private
 
         #' @description
         #' Create a new parser
-        #' @param xml.filename
+        #' @param xml.filename character, the sbml file, namespaces removed
         #' @return a new `Human1Parser` object.
 
     public = list(
@@ -193,7 +194,7 @@ Human1Parser = R6Class("Human1Parser",
         #' cytoscape.js and various databases (sql, neo4j, dc) represent data in tables.
         #' create them here
         #' @param n integer reaction number
-        #' @param excludeUbiquitousSpeces logical, default TRUE: ATP, ADP, water
+        #' @param excludeUbiquitousSpecies logical, default TRUE: ATP, ADP, water
         #' @param includeComplexMembers logical, create edges between each complex and its constituents
         #' @returns a named list, edges and nodes, each a data.frame
 

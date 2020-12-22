@@ -48,6 +48,13 @@ Create a new parser
 \if{html}{\out{<div class="r">}}\preformatted{Human1Parser$new(xml.filename)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{xml.filename}}{character, the sbml file, namespaces removed}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 a new `Human1Parser` object.
 }
@@ -152,9 +159,9 @@ create them here
 \describe{
 \item{\code{n}}{integer reaction number}
 
-\item{\code{includeComplexMembers}}{logical, create edges between each complex and its constituents}
+\item{\code{excludeUbiquitousSpecies}}{logical, default TRUE: ATP, ADP, water}
 
-\item{\code{excludeUbiquitousSpeces}}{logical, default TRUE: ATP, ADP, water}
+\item{\code{includeComplexMembers}}{logical, create edges between each complex and its constituents}
 }
 \if{html}{\out{</div>}}
 }

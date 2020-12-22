@@ -44,7 +44,6 @@ test_getCompartment <- function()
 {
    message(sprintf("--- test_getCompartment"))
 
-
    checkEquals(hp$getCompartment("s"),  "Extracellular")
    checkEquals(hp$getCompartment("p"),  "Peroxisome")
    checkEquals(hp$getCompartment("m"),  "Mitochondria")
