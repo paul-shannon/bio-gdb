@@ -47,6 +47,8 @@ runTests <- function()
 test_ctor <- function()
 {
    message(sprintf("--- test_ctor"))
+   reaction <- getReactionForTesting(5) #    # "FKBP1A binds sirolimus"
+   parser <- ReactionParser$new(doc, reaction)
    checkEquals(xml_path(reaction), "/sbml/model/listOfReactions/reaction[5]")
 
    checkEquals(parser$getXPath(), "/sbml/model/listOfReactions/reaction[5]")
@@ -62,6 +64,10 @@ test_ctor <- function()
 test_getReactants <- function()
 {
    message(sprintf("--- test_getReactants"))
+
+   reaction <- getReactionForTesting(5) #    # "FKBP1A binds sirolimus"
+   parser <- ReactionParser$new(doc, reaction)
+
    checkEquals(parser$getReactantCount(), 2)
    checkEquals(sort(parser$getReactants()), sort(c("species_2026007", "species_9678687")))
 
@@ -70,6 +76,10 @@ test_getReactants <- function()
 test_getProducts <- function()
 {
    message(sprintf("--- test_getProducts"))
+
+   reaction <- getReactionForTesting(5) #    # "FKBP1A binds sirolimus"
+   parser <- ReactionParser$new(doc, reaction)
+
    checkEquals(parser$getProductCount(), 1)
    checkEquals(sort(parser$getProducts()), "species_9679098")
 
@@ -107,6 +117,7 @@ test_getModifiers <- function()
 test_molecularSpeciesMap <- function()
 {
    message(sprintf("--- test_molecularSpeciesMap"))
+
    x <- parser$getMolecularSpeciesMap()
    checkTrue(is.list(x))
    checkEquals(length(x), 66)
@@ -129,10 +140,10 @@ test_toEdgeAndNodeTables <- function()
    checkEquals(parser.tmp$getModifierCount(), 1)
    checkEquals(sort(parser.tmp$getModifiers()), "species_165714")
 
-   x <- parser.tmp$toEdgeAndNodeTables()
+   x <- parser.tmp$toEdgeAndNodeTables(includeComplexMembers=FALSE)
    checkEquals(sort(names(x)), c("edges", "nodes"))
 
-   checkEquals(dim(x$nodes), c(4, 3))
+   checkEquals(dim(x$nodes), c(4, 4))
    checkTrue("species_165714" %in% x$nodes$id)
    checkTrue("p-S371,T389-RPS6KB1" %in% x$nodes$label)
 
@@ -143,10 +154,10 @@ test_toEdgeAndNodeTables <- function()
    checkEquals(x$edges[3, "interaction"], "modifies")
 
       # now get all species, including water, atp, adp if present
-   x <- parser.tmp$toEdgeAndNodeTables(excludeUbiquitousSpecies=FALSE)
+   x <- parser.tmp$toEdgeAndNodeTables(includeComplexMembers=FALSE, excludeUbiquitousSpecies=FALSE)
    checkEquals(sort(names(x)), c("edges", "nodes"))
 
-   checkEquals(dim(x$nodes), c(6, 3))
+   checkEquals(dim(x$nodes), c(6, 4))
    checkTrue(all(c("ATP", "ADP") %in% x$nodes$label))
 
      # keep in mind that excludeUbiquitousSpecies is default TRUE
@@ -188,17 +199,17 @@ test_eliminateUbiquitiousSpecies <- function()
 
    reaction <- getReactionForTesting(3) #    # "FKBP1A binds sirolimus"
    parser <- ReactionParser$new(doc, reaction)
-   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=FALSE)
-   checkEquals(nrow(x$nodes), 5)
-   checkEquals(nrow(x$edges), 4)
+   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=FALSE, includeComplexMembers=FALSE)
+   checkEquals(nrow(x$edges), 8)
+   checkEquals(nrow(x$nodes), 9)
 
-   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=TRUE)
-   checkEquals(nrow(x$nodes), 3)
-   checkEquals(nrow(x$edges), 2)
+   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=TRUE, includeComplexMembers=FALSE)
+   checkEquals(nrow(x$edges), 6)
+   checkEquals(nrow(x$nodes), 7)
 
-   x <- parser$toEdgeAndNodeTables()
-   checkEquals(nrow(x$nodes), 3)
-   checkEquals(nrow(x$edges), 2)
+   x <- parser$toEdgeAndNodeTables(excludeUbiquitousSpecies=FALSE, includeComplexMembers=FALSE)
+   checkEquals(nrow(x$edges), 8)
+   checkEquals(nrow(x$nodes), 9)
 
 } # test_eliminateUbiquitousSpecies
 #------------------------------------------------------------------------------------------------------------------------
