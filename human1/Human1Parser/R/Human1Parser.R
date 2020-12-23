@@ -14,7 +14,7 @@ Human1Parser = R6Class("Human1Parser",
 
     private = list(
         doc = NULL,
-        xml.node = NULL,
+        reaction.node = NULL,
         compartmentMap = NULL,
         molecularSpeciesMap = NULL,
         geneProductMap = NULL,
@@ -140,6 +140,7 @@ Human1Parser = R6Class("Human1Parser",
       #' @param n integer the index of the reaction, or character, the id of the reaction (e.g. "R_O16G1e")
       #' @returns a list of data.frames: reaction, reactionrefs, reactants, products, a list of genes
       getReaction = function(n){
+         stopifnot(class(n) %in% c("character", "numeric"))
          if(is.character(n)){
             reaction <- getNodeSet(hp$getDoc(), sprintf("//reaction[@id='%s']", n))
          } else {

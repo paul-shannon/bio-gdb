@@ -19,10 +19,12 @@ vizmap = [
         }},
 
     {selector:"node[type='metabolite']", css: {
-	"shape": "ellipse",
-        "width": "120px;",
-	"height": "80px;",
-	"background-color": "lightblue"
+       "text-valign":"center",
+       "text-halign":"center",
+       "shape": "ellipse",
+       "width": "120px;",
+       "height": "80px;",
+       "background-color": "white"
         }},
 
     {selector:"node[type='drug']", css: {
@@ -37,17 +39,20 @@ vizmap = [
     {selector:"node[type='reaction']", css: {
        "text-valign":"center",
        "text-halign":"center",
+	"font-size": "12px",
 	"shape": "round-diamond",
-        "width": "200px;",
-	"height": "100px;",
+        "width": "100px;",
+	"height": "60px;",
 	"background-color": "lightblue"
         }},
 
     {selector:"node[type='protein']", css: {
+       "text-valign":"center",
+       "text-halign":"center",
 	"shape": "ellipse",
         "width": "50px;",
 	"height": "50px;",
-	"background-color": "orange",
+	"background-color": "red",
 	"font-size": "20px"
         }},
 

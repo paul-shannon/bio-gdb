@@ -170,7 +170,7 @@ displayManyReactions <- function(r.many)
       }
 
    for(r in r.many){
-     r <- hp$getReaction(r)
+     reaction <- hp$getReaction(r)
      x <- hp$getEdgeAndNodeTables(r, excludeUbiquitousSpecies=TRUE, includeComplexMembers=TRUE)
      g.json <- toJSON(dataFramesToJSON(x$edges, x$nodes))
      addGraph(rcy, g.json)
@@ -190,9 +190,8 @@ displayGlycolysisGlucogenesis <- function()
    tbl.groups <- hp$getGroupsMap()
    reactions <- subset(tbl.groups, name=="Glycolysis / Gluconeogenesis")$reaction
    checkEquals(length(reactions), 41)
-   colnames(tbl.distribution) <- c("groupName", "count")
 
-   displayManyReactions(reactions[1:3])
+   displayManyReactions(reactions)
 
 } # displayGlycolysisGlucogenesis
 #------------------------------------------------------------------------------------------------------------------------
