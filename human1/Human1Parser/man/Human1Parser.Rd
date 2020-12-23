@@ -10,6 +10,8 @@ a names list of counts
 
 a data.frame, one row per geneProduct
 
+a data.frame, one row per reaction, each reaction uniquely assigned to one group
+
 long name
 
 two data.frames: species and speciesRefs
@@ -31,7 +33,8 @@ import XML
 \item \href{#method-new}{\code{Human1Parser$new()}}
 \item \href{#method-getDoc}{\code{Human1Parser$getDoc()}}
 \item \href{#method-getCounts}{\code{Human1Parser$getCounts()}}
-\item \href{#method-getGetProductMap}{\code{Human1Parser$getGetProductMap()}}
+\item \href{#method-getGeneProductMap}{\code{Human1Parser$getGeneProductMap()}}
+\item \href{#method-getGroupsMap}{\code{Human1Parser$getGroupsMap()}}
 \item \href{#method-getCompartment}{\code{Human1Parser$getCompartment()}}
 \item \href{#method-getSpecies}{\code{Human1Parser$getSpecies()}}
 \item \href{#method-getReaction}{\code{Human1Parser$getReaction()}}
@@ -80,12 +83,22 @@ learn the elements and their count
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getGetProductMap"></a>}}
-\if{latex}{\out{\hypertarget{method-getGetProductMap}{}}}
-\subsection{Method \code{getGetProductMap()}}{
+\if{html}{\out{<a id="method-getGeneProductMap"></a>}}
+\if{latex}{\out{\hypertarget{method-getGeneProductMap}{}}}
+\subsection{Method \code{getGeneProductMap()}}{
 retrieve the association of geneProduct id and other identifiers
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getGetProductMap()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getGeneProductMap()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getGroupsMap"></a>}}
+\if{latex}{\out{\hypertarget{method-getGroupsMap}{}}}
+\subsection{Method \code{getGroupsMap()}}{
+retrieve the association of reactions into groups
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Human1Parser$getGroupsMap()}\if{html}{\out{</div>}}
 }
 
 }
@@ -135,7 +148,7 @@ extract one reaction
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{integer the index of the reaction}
+\item{\code{n}}{integer the index of the reaction, or character, the id of the reaction (e.g. "R_O16G1e")}
 }
 \if{html}{\out{</div>}}
 }

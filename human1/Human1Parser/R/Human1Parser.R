@@ -69,8 +69,16 @@ Human1Parser = R6Class("Human1Parser",
       #' @description
       #' retrieve the association of geneProduct id and other identifiers
       #' @returns a data.frame, one row per geneProduct
-      getGetProductMap = function(){
+      getGeneProductMap = function(){
          private$geneProductMap
+         },
+
+      #----------------------------------------------------------------------------------------------------
+      #' @description
+      #' retrieve the association of reactions into groups
+      #' @returns a data.frame, one row per reaction, each reaction uniquely assigned to one group
+      getGroupsMap = function(){
+         private$groupsMap
          },
 
       #----------------------------------------------------------------------------------------------------
@@ -129,10 +137,16 @@ Human1Parser = R6Class("Human1Parser",
       #----------------------------------------------------------------------------------------------------
       #' @description
       #' extract one reaction
-      #' @param n integer the index of the reaction
+      #' @param n integer the index of the reaction, or character, the id of the reaction (e.g. "R_O16G1e")
       #' @returns a list of data.frames: reaction, reactionrefs, reactants, products, a list of genes
       getReaction = function(n){
-         reaction <- getNodeSet(private$doc, sprintf("(//reaction)[%d]", n))
+         if(is.character(n)){
+            reaction <- getNodeSet(hp$getDoc(), sprintf("//reaction[@id='%s']", n))
+         } else {
+           reaction <- getNodeSet(private$doc, sprintf("(//reaction)[%d]", n))
+           n <- xmlAttrs(reaction[[1]])[["id"]]
+           }
+         stopifnot(length(reaction) == 1)
          tbl.reaction <- with(as.list(xmlAttrs(reaction[[1]])),
                               data.frame(id=id,
                                          #name=name,
@@ -145,7 +159,7 @@ Human1Parser = R6Class("Human1Parser",
            #       metaid        sboTerm             id     reversible           fast lowerFluxBound  upperFluxBound
            #  "R_HMR_3905"  "SBO:0000176"   "R_HMR_3905"        "false"        "false"        "FB2N0"    "FB3N1000"
 
-         annotation <- getNodeSet(private$doc, sprintf("(//reaction)[%d]/annotation/*/*/*/*/li", n))
+         annotation <- getNodeSet(private$doc, sprintf("(//reaction)[@id='%s']/annotation/*/*/*/*/li", n))
          external.ids <- as.character(lapply(annotation, xmlAttrs))
          external.ids <- sub("http://identifiers.org/", "", external.ids)
            # <li resource="http://identifiers.org/ec-code/1.1.1.1"/>
@@ -157,7 +171,7 @@ Human1Parser = R6Class("Human1Parser",
          tbl.refs <- data.frame();
          for(token in tokens)
             tbl.refs <- rbind(tbl.refs, data.frame(ref=token[1], value=token[2], stringsAsFactors=FALSE))
-         reactants <- getNodeSet(private$doc, sprintf("(//reaction)[%d]/listOfReactants/speciesReference", n))
+         reactants <- getNodeSet(private$doc, sprintf("(//reaction)[@id='%s']/listOfReactants/speciesReference", n))
          tbls.reactants <- lapply(reactants, function(reactant) {
             attrs <- xmlAttrs(reactant)
             with(as.list(attrs),
@@ -165,7 +179,7 @@ Human1Parser = R6Class("Human1Parser",
                             stringsAsFactors=FALSE))
             })
          tbl.reactants <- do.call(rbind, tbls.reactants)
-         products  <- getNodeSet(private$doc, sprintf("(//reaction)[%d]/listOfProducts/speciesReference", n))
+         products  <- getNodeSet(private$doc, sprintf("(//reaction)[@id='%s']/listOfProducts/speciesReference", n))
          tbls.products <- lapply(products, function(product) {
             attrs <- xmlAttrs(product)
             with(as.list(attrs),
@@ -174,8 +188,8 @@ Human1Parser = R6Class("Human1Parser",
             })
           tbl.products <- do.call(rbind, tbls.products)
             # todo: distinguish "and" genes from "or" genes from single-item geneProductRef
-        genes.raw.chosen  <- getNodeSet(private$doc, sprintf("(//reaction)[%d]/geneProductAssociation//geneProductRef", n))
-        printf(" reaction %d,    genes found: %d", n, length(genes.raw.chosen))
+        genes.raw.chosen  <- getNodeSet(private$doc, sprintf("(//reaction)[@id='%s']/geneProductAssociation//geneProductRef", n))
+        # printf(" reaction %d,    genes found: %d", n, length(genes.raw.chosen))
         genes <- unlist(lapply(genes.raw.chosen, function(gene) {
            attrs <- xmlAttrs(gene)
            attrs[["geneProduct"]]
@@ -217,47 +231,39 @@ Human1Parser = R6Class("Human1Parser",
          tbl.edges <- rbind(tbl.in, tbl.out, tbl.genes)
 
          nodes.all <- with(tbl.edges, unique(c(source, target)))
+         nodes.species <- intersect(nodes.all, private$molecularSpeciesMap$id)
+         nodes.genes <- intersect(nodes.all, private$geneProductMap$id)
+         node.reaction <- grep("^R_", nodes.all, value=TRUE)
 
-         #nodes.species <- intersect(nodes.all, names(map))
-         #nodes.other   <- setdiff(nodes.all, names(map))
-         #assignNodeType <- function(node.id){
-         #     if(node.id == "species_9678687")
-         #         return("drug")
-         #     if(grepl("^reaction_", node.id))
-         #         return("reaction")
-         #     if(grepl("^uniprotkb:", node.id))
-         #         return("protein")
-         #     if(grepl("^ligandId:", node.id))
-         #         return("ligand")
-         #     if(grepl("^species_", node.id))
-         #         return(map[[node.id]]$moleculeType)
-         #     return("unrecognized")
-         # } # assignNodeType
-         #
-         #assignNodeName <- function(node.id){
-         #     if(node.id %in% c("species_9678687", "ligandId:6031"))
-         #         return("rapamycin")
-         #     if(grepl("^reaction_", node.id))
-         #         return(self$getName())
-         #     if(grepl("^uniprotkb:", node.id))
-         #         return(select(EnsDb.Hsapiens.v79,
-         #                       key=sub("uniprotkb:", "", node.id),
-         #                       keytype="UNIPROTID",
-         #                       columns=c("SYMBOL"))$SYMBOL)
-         #     if(grepl("^ligandId:", node.id))
-         #         return(node.id)
-         #     if(grepl("^species_", node.id))
-         #         return(map[[node.id]]$name)
-         #     return(node.id)
-         # } # addingNodeName
+         assignNodeType <- function(node.id){
+             if(node.id %in% nodes.species)
+                 return("metabolite")
+             if(node.id %in% nodes.genes)
+                 return("protein")
+             if(node.id %in% node.reaction)
+                 return("reaction")
+             return(NA)
+             }
 
-         # tbl.nodes <- data.frame(id=nodes.all,
-         #                         type=unlist(lapply(nodes.all, assignNodeType)),
-         #                         label=unlist(lapply(nodes.all, assignNodeName)),
-         #                         parent=rep("", length(nodes.all)),
-         #                         stringsAsFactors=FALSE)
+         assignNodeName <- function(node.id){
+           if(node.id %in% nodes.species){
+              return(subset(private$molecularSpeciesMap, id==node.id)$name)
+              }
+           if(node.id %in% nodes.genes){
+              return(subset(private$geneProductMap, id==node.id)$geneSymbol)
+              }
+           if(node.id %in% node.reaction){
+              return(node.id) # todo: map best of the various identifiers to a reaction name
+              }
+           return(node.id)
+           }
 
-         return(list(edges=tbl.edges, nodes=data.frame()))
+         tbl.nodes <- data.frame(id=nodes.all,
+                                 type=unlist(lapply(nodes.all, assignNodeType)),
+                                 label=unlist(lapply(nodes.all, assignNodeName)),
+                                 parent=rep("", length(nodes.all)),
+                                 stringsAsFactors=FALSE)
+         return(list(edges=tbl.edges, nodes=tbl.nodes))
          } # getEdgeAndNodeTables
 
      ) # public

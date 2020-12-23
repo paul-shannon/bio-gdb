@@ -116,7 +116,6 @@ run.extractSpeciesMap <- function()
 extractReactionMap = function(i)
 {
    if((i %% 100) == 0) printf("extracting reaction entry %d", i)
-
    path <- sprintf("//listOfReactions/reaction[%d]/@id", i)
    principal.id <- as.character(getNodeSet(doc, path))
 
